@@ -1,173 +1,271 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Chat Processor</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Procesar Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.4/xlsx.full.min.js"></script>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #369cf0, #4d8691);  /* Gradiente suave */
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
 
-    h1 {
-      color: #333;
-      margin-bottom: 10px;
-    }
+        p {
+            color: #555;
+            font-size: 1.1em;
+            text-align: center;
+            max-width: 600px;
+            margin-bottom: 20px;
+        }
 
-    p {
-      color: #555;
-      font-size: 1.1em;
-      text-align: center;
-      max-width: 600px;
-      margin-bottom: 20px;
-    }
+        .container {
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 600px;
+            max-width: 100%;
+        }
 
-    input[type="file"] {
-      display: block;
-      margin: 20px auto;
-      font-size: 1em;
-    }
+        input[type="file"] {
+            display: block;
+            margin: 20px auto;
+            font-size: 1em;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
 
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      font-size: 1em;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
+        input[type="file"]:hover {
+            border-color: #007bff;
+        }
 
-    button:hover {
-      background-color: #0056b3;
-    }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
 
-    #downloadLink {
-      margin-top: 20px;
-      text-decoration: none;
-      color: #007bff;
-      font-size: 1.1em;
-      display: none;
-    }
+        button:hover {
+            background-color: #0056b3;
+        }
 
-    #downloadLink:hover {
-      text-decoration: underline;
-    }
+        #downloadLink {
+            margin-top: 20px;
+            text-decoration: none;
+            color: #007bff;
+            font-size: 1.1em;
+            display: none;
+        }
 
-    footer {
-      position: absolute;
-      bottom: 10px;
-      font-size: 0.9em;
-      color: #777;
-    }
-  </style>
+        #downloadLink:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+    position: absolute;
+    bottom: 10px;
+    font-size: 0.9em;
+    color: #ffffff;  /* Cambié el color a blanco para mayor contraste */
+}
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+            display: none; /* Ocultar inicialmente */
+            max-height: 100px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f4f4f4;
+            color: #333;
+        }
+
+        td {
+            background-color: #fafafa;
+            color: #555;
+        }
+
+        td:hover {
+            background-color: #f1f1f1;
+        }
+
+        .download-btn {
+            background-color: #28a745;
+            color: white;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            display: none;
+            transition: background-color 0.3s ease;
+        }
+
+        .download-btn:hover {
+            background-color: #218838;
+        }
+
+        /* Barra de desplazamiento para la tabla */
+        table::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        table::-webkit-scrollbar-thumb {
+            background-color: #888;
+            border-radius: 4px;
+        }
+
+        table::-webkit-scrollbar-thumb:hover {
+            background-color: #555;
+        }
+
+    </style>
 </head>
 <body>
-  <h1>Procesador de Chats</h1>
-  <p>
-    Carga un archivo de chat en formato <strong>.txt</strong>, procesa su contenido y genera un archivo <strong>Excel</strong> descargable con la información procesada.
-  </p>
-  <input type="file" id="fileInput" accept=".txt">
-  <button onclick="processFile()">Procesar Archivo</button>
-  <a id="downloadLink">Descargar Archivo Procesado</a>
-  <footer>
-    Desarrollado con ❤️ por Manuel González.
-  </footer>
+    <div class="container">
+        <h1>Procesador de Chats</h1>
+        <p>
+          Carga un archivo de chat en formato <strong>.txt</strong>, procesa su contenido y genera un archivo <strong>Excel</strong> descargable con la información procesada.
+        </p>
+        <input type="file" id="fileInput" />
+        <button onclick="processChat()">Procesar</button>
+        <div class="info">
+            <p>Selecciona un archivo de chat para procesarlo. El archivo se convertirá en un archivo Excel.</p>
+        </div>
 
-  <script>
-    function processFile() {
-      const fileInput = document.getElementById('fileInput');
-      if (!fileInput.files.length) {
-        alert("Por favor, selecciona un archivo primero.");
-        return;
-      }
+        <!-- Previsualización de los datos procesados -->
+        <table id="previewTable">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Timestamp</th>
+                    <th>Mensaje</th>
+                    <th>Novedad</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
 
-      const file = fileInput.files[0];
-      const reader = new FileReader();
+        <!-- Botón de descarga -->
+        <button id="downloadBtn" class="download-btn" onclick="downloadFile()">Descargar archivo Excel</button>
+    </div>
+    <footer>
+        Desarrollado con ❤️ por Manuel González.
+    </footer>
 
-      reader.onload = function (event) {
-        try {
-          const content = event.target.result;
+    <script>
+        let globalWorkbook = null;
 
-          // Limpiar y dividir el contenido
-          const lines = content.split('\n').map(line => 
-            line.replace(/[\u200B-\u200D\uFEFF\u202F\u200E]/g, '').trim()
-          );
-          const data = [["Fecha", "Hora", "Timestamp", "Mensaje", "Novedad"]];
+        function processChat() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
 
-          lines.forEach(line => {
-            // Ajustar la expresión regular para capturar correctamente los mensajes
-            const match = line.match(/\[(\d{1,2}\/\d{1,2}\/\d{2}),\s*(\d{1,2}:\d{2}:\d{2}\s[ap]\.m\.)\]\s~?\s?([^:]+):\s(.+)/);
-            if (match) {
-              const [_, date, time, sender, message] = match;
-
-              // Ignorar mensajes con "imagen omitida" o números telefónicos
-              if (message.toLowerCase().includes("imagen omitida") || /\+?\d{1,3}\s?\(?\d{1,4}\)?[\s.-]?\d{1,4}[\s.-]?\d{1,4}/.test(message)) {
-                return; // Ignorar este mensaje
-              }
-
-              let noveltyFlag = " ";
-              if (message.toLowerCase().includes("siedco plus")) {
-                noveltyFlag = 1;
-              } else if (message.toLowerCase().includes("siedco")) {
-                return; // Ignorar mensajes con "siedco" solamente
-              }
-
-              // Log para verificar el procesamiento de cada línea
-              console.log({ date, time, sender, message, noveltyFlag });
-
-              // Agregar datos procesados
-              data.push([date, time, `${date}, ${time}`, message.trim(), noveltyFlag]);
+            if (!file) {
+                alert("Por favor, selecciona un archivo.");
+                return;
             }
-          });
 
-          // Verificar que se están agregando datos
-          console.log(data);
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                const lines = content.split('\n');
+                const parsedData = [];
 
-          // Crear una hoja de Excel
-          const worksheet = XLSX.utils.aoa_to_sheet(data);
-          const workbook = XLSX.utils.book_new();
-          XLSX.utils.book_append_sheet(workbook, worksheet, "Chat Procesado");
+                const noveltyKeywords = ["siedco plus"];
 
-          // Cambiar a formato binario para evitar errores de tipo blob
-          const binary = XLSX.write(workbook, { bookType: 'xlsx', type: 'binary' });
+                lines.forEach(line => {
+                    const regex = /\[(\d{1,2}\/\d{1,2}\/\d{2}), (\d{1,2}:\d{2}:\d{2}\s[ap]\.m\.)\] (.+?): (.+)/;
+                    const match = line.match(regex);
 
-          // Convertir binario a blob
-          const blob = new Blob([s2ab(binary)], { type: "application/octet-stream" });
+                    if (match) {
+                        let [_, date, time, sender, message] = match;
+                        let noveltyFlag = " ";
 
-          const link = document.getElementById('downloadLink');
-          link.href = URL.createObjectURL(blob);
-          link.download = 'ChatProcesado.xlsx';
-          link.style.display = 'inline-block';
-          link.textContent = 'Descargar Archivo Procesado';
-        } catch (error) {
-          console.error("Error al procesar el archivo:", error);
-          alert("Ocurrió un error al procesar el archivo. Verifica el formato del archivo.");
+                        if (message.toLowerCase().includes("siedco plus")) {
+                            noveltyFlag = 1;
+                            if (message.toLowerCase().includes("57")) {
+                                noveltyFlag = 1;
+                            }
+                        } else if (message.toLowerCase().includes("siedco")) {
+                            return; // Ignorar "siedco"
+                        }
+
+                        if (message.toLowerCase().includes("omitido")) {
+                            message = "contenido omitido";
+                        }
+
+                        parsedData.push([date, time, `${date}, ${time}`, message.trim(), noveltyFlag]);
+                    }
+                });
+
+                // Previsualizar los datos procesados en una tabla (solo las primeras 5 filas)
+                const previewTable = document.getElementById('previewTable');
+                const tbody = previewTable.querySelector('tbody');
+                tbody.innerHTML = '';  // Limpiar tabla anterior
+                parsedData.slice(0, 5).forEach(row => {  // Mostrar solo las primeras 5 filas
+                    const tr = document.createElement('tr');
+                    row.forEach(cell => {
+                        const td = document.createElement('td');
+                        td.textContent = cell;
+                        tr.appendChild(td);
+                    });
+                    tbody.appendChild(tr);
+                });
+                previewTable.style.display = 'table';  // Mostrar la tabla
+
+                // Convertir los datos a un archivo Excel
+                const ws = XLSX.utils.aoa_to_sheet([["Fecha", "Hora", "Timestamp", "Mensaje", "Novedad"], ...parsedData]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Chat");
+
+                globalWorkbook = wb;  // Guardar el libro globalmente
+
+                // Mostrar botón de descarga
+                document.getElementById('downloadBtn').style.display = 'block';
+            };
+            reader.readAsText(file);
         }
-      };
 
-      reader.readAsText(file);
-    }
-
-    // Función para convertir cadena a ArrayBuffer
-    function s2ab(s) {
-      const buf = new ArrayBuffer(s.length);
-      const view = new Uint8Array(buf);
-      for (let i = 0; i < s.length; i++) {
-        view[i] = s.charCodeAt(i) & 0xFF;
-      }
-      return buf;
-    }
-  </script>
+        function downloadFile() {
+            if (globalWorkbook) {
+                XLSX.writeFile(globalWorkbook, "chat_procesado.xlsx");
+            }
+        }
+    </script>
 </body>
 </html>
