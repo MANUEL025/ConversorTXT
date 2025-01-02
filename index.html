@@ -8,7 +8,7 @@
     <style>
         body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(to right, #369cf0, #4d8691);  /* Gradiente suave */
+    background: linear-gradient(to right, #369cf0, #4d8691);  
     margin: 0;
     padding: 0;
     display: flex;
@@ -96,7 +96,7 @@
             border-collapse: collapse;
             margin-top: 20px;
             font-size: 14px;
-            display: none; /* Ocultar inicialmente */
+            display: none; 
             max-height: 100px;
             overflow-y: auto;
             border-radius: 8px;
@@ -132,8 +132,8 @@
             cursor: pointer;
             font-size: 16px;
             margin-top: 20px;
-            margin-left: auto;
-            margin-right: auto;
+            margin-left: auto; 
+    margin-right: auto;
             display: none;
             transition: background-color 0.3s ease;
         }
@@ -142,7 +142,7 @@
             background-color: #218838;
         }
 
-       
+        
         table::-webkit-scrollbar {
             width: 8px;
         }
@@ -240,7 +240,7 @@
                 const previewTable = document.getElementById('previewTable');
                 const tbody = previewTable.querySelector('tbody');
                 tbody.innerHTML = '';  // Limpiar tabla anterior
-                parsedData.slice(0, 3).forEach(row => {  // Mostrar solo las primeras 5 filas
+                parsedData.slice(0, 3).forEach(row => {  
                     const tr = document.createElement('tr');
                     row.forEach(cell => {
                         const td = document.createElement('td');
@@ -272,5 +272,3 @@
     </script>
 </body>
 </html>
-
-  
